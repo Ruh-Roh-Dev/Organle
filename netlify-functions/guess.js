@@ -1,0 +1,109 @@
+// netlify-functions/guess.js
+const cors = require('cors');
+const { parse } = require('querystring');
+
+const organs = [
+    { name: 'Heart', type: 'Circulatory', size: 12, coordinates: [-5, 40] },
+    { name: 'Lungs', type: 'Respiratory', size: 24, coordinates: [0, 50] },
+    { name: 'Kidney', type: 'Excretory', size: 11, coordinates: [0, 20] },
+    { name: 'Liver', type: 'Digestive', size: 16, coordinates: [10, 35] },
+    { name: 'Stomach', type: 'Digestive', size: 25, coordinates: [-5, 30] },
+    { name: 'Pancreas', type: 'Digestive', size: 18, coordinates: [0, 28] },
+    { name: 'Spleen', type: 'Lymphatic', size: 12, coordinates: [-12, 32] },
+    { name: 'Bladder', type: 'Excretory', size: 8, coordinates: [0, 10] },
+    { name: 'Brain', type: 'Nervous', size: 15, coordinates: [0, 80] },
+    { name: 'Esophagus', type: 'Digestive', size: 25, coordinates: [0, 60] },
+    { name: 'Small Intestine', type: 'Digestive', size: 600, coordinates: [0, 15] },
+    { name: 'Large Intestine', type: 'Digestive', size: 150, coordinates: [0, 12] },
+    { name: 'Appendix', type: 'Digestive', size: 9, coordinates: [8, 10] },
+    { name: 'Gallbladder', type: 'Digestive', size: 10, coordinates: [5, 33] },
+    { name: 'Thymus', type: 'Lymphatic', size: 5, coordinates: [0, 55] },
+    { name: 'Thyroid', type: 'Endocrine', size: 5, coordinates: [0, 65] },
+    { name: 'Rectum', type: 'Digestive', size: 15, coordinates: [0, 5] },
+    { name: 'Anus', type: 'Digestive', size: 4, coordinates: [0, 0] }
+  ];
+
+const guessedOrgans = [];
+
+const getArrowDirection = (guessedValue, targetValue) => {
+  if (guessedValue > targetValue) return 'up'; // higher
+  if (guessedValue < targetValue) return 'down'; // lower
+  return ''; // equal, no arrow
+};
+
+const calculateSizeDifference = (guessedSize, targetSize) => {
+  const diff = guessedSize - targetSize;
+  if (diff === 0) return 'green';
+  if (Math.abs(diff) <= 5) return 'yellow';
+  return 'gray';
+};
+
+const calculateDistanceDifference = (guessedCoords, targetCoords) => {
+  const distance = Math.sqrt(
+    Math.pow(guessedCoords[0] - targetCoords[0], 2) +
+    Math.pow(guessedCoords[1] - targetCoords[1], 2)
+  );
+  if (distance === 0) return 'green';
+  if (distance <= 5) return 'yellow';
+  return 'gray';
+};
+
+const calculateTypeMatch = (guessedType, targetType) => {
+  return guessedType === targetType ? 'green' : 'gray';
+};
+
+exports.handler = async function (event, context) {
+  const { guess } = JSON.parse(event.body);
+
+  if (guessedOrgans.includes(guess)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'You have already guessed this organ!',
+        sizeTileColor: 'gray',
+        distanceTileColor: 'gray',
+        typeTileColor: 'gray',
+      }),
+    };
+  }
+
+  const match = organs.find((o) => o.name.toLowerCase() === guess.toLowerCase());
+  if (!match) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Not a valid organ!',
+        sizeTileColor: 'gray',
+        distanceTileColor: 'gray',
+        typeTileColor: 'gray',
+      }),
+    };
+  }
+
+  const targetOrganData = organs.find((organ) => organ.name === 'Heart'); // Change target organ logic as needed
+
+  // Process the guess (similar to how it's done in Express)
+  const sizeTileColor = calculateSizeDifference(match.size, targetOrganData.size);
+  const distanceTileColor = calculateDistanceDifference(match.coordinates, targetOrganData.coordinates);
+  const typeTileColor = calculateTypeMatch(match.type, targetOrganData.type);
+
+  guessedOrgans.push(guess);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: `Organ guess: ${match.name}`,
+      size: match.size,
+      distance: Math.sqrt(
+        Math.pow(match.coordinates[0] - targetOrganData.coordinates[0], 2) +
+        Math.pow(match.coordinates[1] - targetOrganData.coordinates[1], 2)
+      ).toFixed(1),
+      type: match.type,
+      sizeTileColor,
+      distanceTileColor,
+      typeTileColor,
+      sizeArrow: getArrowDirection(match.size, targetOrganData.size),
+      distanceArrow: getArrowDirection(match.distance, targetOrganData.distance)
+    }),
+  };
+};

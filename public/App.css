@@ -1,0 +1,294 @@
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(137.28deg, #677272 -5.33%, #121212 35.62%) no-repeat;
+  background-size: cover;
+  height: 100vh;
+  color: #fff;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* General Layout */
+.game-container {
+  text-align: center;
+  padding: 10px 20px;
+  color: #fff;
+  font-family: Inter,system-ui,Avenir,Helvetica,Arial,sans-serif;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 2em;
+}
+
+input {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 16px;
+  width: 50%;
+  min-width: 200px;
+  text-align: center;
+  background-color: white;
+  border-radius: 40px;
+  color: #121212;
+}
+
+.suggestions-list {
+  list-style-type: none;
+  padding: 0;
+  color: #121212;
+}
+
+.suggestions-list li {
+  padding: 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.suggestions-list li:hover {
+  background-color: #a7a7a7;
+}
+
+.guess-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guess-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.guess-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.tile-container {
+  padding: 2.5px;
+  margin: 5px;
+  font-size: 90%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.tile {
+  width: 100px;
+  height: 68px;
+  margin: 0 5px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding:2.5px;
+  color: white;
+  text-align: center;
+}
+
+.tile-header {
+  font-size: 15.25px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.tile-body {
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile.gray {
+  background-color: #454545;
+}
+
+.tile.yellow {
+  background-color: #454545;
+  animation: flipyellow 1.65s ease-in-out forwards;
+}
+
+.tile.green {
+  background-color: #454545;
+  animation: flipgreen 1.65s ease-in-out forwards;
+}
+
+/* Blur effect for the game interface only */
+.blurred {
+  filter: blur(8px);
+  transition: filter 0.3s ease-in-out;
+}
+
+/* Fullscreen overlay that catches clicks */
+.blur-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  cursor: pointer;
+}
+
+/* Keep the "Correct!" message clear */
+.correct-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 20px 40px;
+  font-size: 1.75rem; /* Adjust font size */
+  font-weight: bold;
+  border-radius: 10px;
+  z-index: 9999;
+  text-align: center;
+  max-width: 80%; /* Ensure it doesn't overflow */
+  word-wrap: break-word; /* Break long words if necessary */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Make sure only the game area is blurred when the game is ongoing */
+.game-container {
+  filter: none;
+  position: relative;
+  z-index: 1; /* Ensure it's below the correct message */
+}
+
+/* When game is blurred, apply the filter only to the game container */
+.game-container.blurred {
+  filter: blur(8px);
+  transition: filter 0.3s ease-in-out;
+}
+
+
+/* Close button */
+.close-button {
+  margin-top: 20px; /* Add more space from the message */
+  background-color: #43a865;
+  border: none;
+  color: white;
+  padding: 12px 25px; /* Adjust padding for better alignment */
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block; /* Ensure button is inline with the text */
+}
+
+.close-button:hover {
+  background-color: #36a55b;
+}
+
+
+.arrow {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+@keyframes flipgreen {
+  60% {
+      transform: rotateY(0);
+      background-color: #454545
+  }
+
+  80% {
+      transform: rotateY(180deg);
+      background-color: #454545
+  }
+
+  to {
+      transform: rotateY(0);
+      background-color: #43a865
+  }
+}
+
+@keyframes flipyellow {
+  60% {
+      transform: rotateY(0);
+      background-color: #454545
+  }
+
+  80% {
+      transform: rotateY(180deg);
+      background-color: #454545
+  }
+
+  to {
+      transform: rotateY(0);
+      background-color: #b8b105
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-button {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+.menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgb(24, 24, 24);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 300px; /* Adjust width as needed */
+}
+
+.p{
+  padding: 2.5px;
+}
+
+.how-to-play {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  background-color: #b1b1b1;
+}
+ 
+.button {
+  margin-top: 20px; /* Add more space from the message */
+  background-color: #43a865;
+  border: none;
+  color: white;
+  padding: 12px 25px; /* Adjust padding for better alignment */
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block; /* Ensure button is inline with the text */
+}
